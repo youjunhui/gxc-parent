@@ -1,0 +1,11 @@
+package com.me;
+
+public class TestServiceImpl implements TestService {
+
+	@Override
+	public <T> T getById() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

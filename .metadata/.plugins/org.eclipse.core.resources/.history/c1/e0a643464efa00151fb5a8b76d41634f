@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>   
+<beans xmlns="http://www.springframework.org/schema/beans"      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"       
+xmlns:context="http://www.springframework.org/schema/context"      xmlns:aop="http://www.springframework.org/schema/aop"      
+xmlns:tx="http://www.springframework.org/schema/tx"       
+xsi:schemaLocation="http://www.springframework.org/schema/beans  http://www.springframework.org/schema/beans/spring-beans-2.5.xsd  
+http://www.springframework.org/schema/context   http://www.springframework.org/schema/context/spring-context-2.5.xsd  
+http://www.springframework.org/schema/aop   http://www.springframework.org/schema/aop/spring-aop-2.5.xsd  
+http://www.springframework.org/schema/tx   http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">      
+
+	<bean id="propertyConfigurer"
+		class="com.me.model.utils.PropertyPlaceholderConfigurerExt">
+		<property name="locations">
+			<list>
+				<value>classpath:/META-INF/spring/init.properties</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="${jdbc.driverClassName}" />          
+		<property name="url" value="${jdbc.url}" />   
+		<property name="username" value="${jdbc.userName}" />           
+		<property name="password" value="${jdbc.password}" />          
+		<!-- data source configuration -->           
+		<property name="initialSize" value="60" />
+		<!-- initial connections -->          
+		<property name="maxActive" value="100" />
+		<!-- MAX connections -->          
+		<property name="maxIdle" value="50" />
+		<!-- MAX idle connections -->          
+		<property name="minIdle" value="10" />
+		<!-- MIN idle connections -->          
+		<!-- 处理mysql 8小时自动断开连接的问题 -->         
+		<property name="testWhileIdle" value="true" />          
+		<property name="testOnBorrow">
+		    <value>false</value>
+		</property>
+		<property name="testOnReturn">
+		    <value>false</value>
+		</property>
+		<property name="timeBetweenEvictionRunsMillis">
+		    <value>10000</value>
+		</property>
+		<property name="numTestsPerEvictionRun">
+			<value>3</value>
+		</property>
+        <property name="minEvictableIdleTimeMillis">
+        	<value>300000</value>
+        </property>
+	</bean>
+    <!-- =========================== transaction ========================== -->
+	<tx:annotation-driven proxy-target-class="true"  transaction-manager="transactionManager" />
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+    <bean id="transactionTemplate"
+        class="org.springframework.transaction.support.TransactionTemplate">
+        <property name="timeout" value="30" />
+        <property name="transactionManager" ref="transactionManager" />
+    </bean>	
+    <bean id="lobHandler" class="org.springframework.jdbc.support.lob.DefaultLobHandler" lazy-init="true" />
+
+	<!-- ============================= iBaits ============================= -->
+	<bean id="sqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+		<property name="lobHandler" ref="lobHandler" />
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation" value="classpath:META-INF/sqlmap-config.xml" />
+	</bean>
+	
+    <bean id="transactionNewTemplate" class="org.springframework.transaction.support.TransactionTemplate">
+        <property name="propagationBehavior" value="3"/>
+        <property name="transactionManager" ref="transactionManager" />
+    </bean>
+    
+    <bean id="sqlMapDaoHelper" class="com.me.dal.SqlMapDaoHelper">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="sqlMapClient" ref="sqlMapClient"/>
+	</bean>
+	
+	<bean id="testServiceImpl" class="com.me.TestServiceImpl">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="sqlMapClient" ref="sqlMapClient"/>
+	</bean>
+	
+	<bean id="accessListDao" class="com.me.dal.biz.AccessListDaoImpl">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="sqlMapClient" ref="sqlMapClient"/>
+	</bean>
+	
+</beans>

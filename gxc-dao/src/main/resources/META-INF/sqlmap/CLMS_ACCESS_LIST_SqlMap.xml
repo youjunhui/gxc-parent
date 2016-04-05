@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="djb" >
+	<resultMap id="resultMap" class="com.me.model.dal.AccessListDO">
+	    <result column="ID" property="id" jdbcType="DECIMAL"/>
+	    <result column="ACCESS_KEY" property="accessKey" jdbcType="VARCHAR"/>
+	    <result column="ACCESS_RESULT" property="accessResult" jdbcType="VARCHAR"/>
+	    <result column="ACCESS_TYPE" property="accessType" jdbcType="VARCHAR"/>
+	    <result column="BIZ_PROC_ID" property="bizProcId" jdbcType="DECIMAL"/>
+	    <result column="BIZ_SEQNO" property="bizSeqno" jdbcType="VARCHAR"/>
+	    <result column="ACCESS_RULE_TYPE" property="accessRuleType" jdbcType="VARCHAR"/>
+	    <result column="PROMPT_INFO" property="promptInfo" jdbcType="VARCHAR"/>
+	    <result column="GMT_CREATOR" property="gmtCreator" jdbcType="VARCHAR"/>
+	    <result column="GMT_CREATED" property="gmtCreated" jdbcType="TIMESTMP"/>
+	    <result column="GMT_MODIFIER" property="gmtModifier" jdbcType="VARCHAR"/>
+	    <result column="GMT_MODIFIED" property="gmtModified" jdbcType="TIMESTMP"/>
+	  </resultMap>
+	  <sql id="Base_Column_List">ID,ACCESS_RULE_TYPE,ACCESS_KEY,ACCESS_RESULT,ACCESS_TYPE,BIZ_PROC_ID,BIZ_SEQNO,PROMPT_INFO,GMT_CREATOR,GMT_CREATED,GMT_MODIFIER,GMT_MODIFIED</sql>
+	  <sql id="Base_Column_List_Insert">ACCESS_RULE_TYPE,ACCESS_KEY,ACCESS_RESULT,ACCESS_TYPE,BIZ_PROC_ID,BIZ_SEQNO,PROMPT_INFO,GMT_CREATOR,GMT_CREATED,GMT_MODIFIER,GMT_MODIFIED</sql>
+	  <insert id="insert" parameterClass="com.me.model.dal.AccessListDO">
+	    insert into CLMS_ACCESS_LIST (
+	    <include refid="Base_Column_List_Insert"/> ) values (#accessRuleType:VARCHAR#,#accessKey:VARCHAR#,#accessResult:VARCHAR#,#accessType:VARCHAR#,#bizProcId:DECIMAL#,#bizSeqno:VARCHAR#,#promptInfo:VARCHAR#,#gmtCreator:VARCHAR#, now()  , #gmtModifier:VARCHAR#, now() )
+	    <selectKey resultClass="long" keyProperty="id"> select @@identity as id </selectKey>
+	  </insert>
+	  <update id="update" parameterClass="com.me.model.dal.AccessListDO">update CLMS_ACCESS_LIST
+	    <dynamic prepend="set">
+	      <isNotNull property="accessKey">ACCESS_KEY = #accessKey:VARCHAR#,</isNotNull>
+	      <isNotNull property="accessResult">ACCESS_RESULT = #accessResult:VARCHAR#,</isNotNull>
+	      <isNotNull property="accessRuleType">ACCESS_RULE_TYPE = #accessRuleType:VARCHAR#,</isNotNull>
+	      <isNotNull property="accessType">ACCESS_TYPE = #accessType:VARCHAR#,</isNotNull>
+	      <isNotNull property="bizProcId">BIZ_PROC_ID = #bizProcId:DECIMAL#,</isNotNull>
+	      <isNotNull property="bizSeqno">BIZ_SEQNO = #bizSeqno:VARCHAR#,</isNotNull>
+	      <isNotNull property="promptInfo">PROMPT_INFO = #promptInfo:VARCHAR#,</isNotNull>
+	      <isNotNull property="gmtModifier">GMT_MODIFIER = #gmtModifier:VARCHAR#,</isNotNull> GMT_MODIFIED = now() 
+	    </dynamic>
+	    <dynamic prepend="where">
+	      <isEmpty property="id">@query not allowed</isEmpty>
+	      <isNotEmpty property="id" prepend=" and ">ID = #id:DECIMAL#</isNotEmpty>
+	    </dynamic>
+	  </update>
+	  <delete id="deleteByKey" parameterClass="com.me.model.dal.AccessListDO"> delete from CLMS_ACCESS_LIST
+	    <dynamic prepend="where">
+	      <isEmpty property="id">@query not allowed</isEmpty>
+	      <isNotEmpty property="id" prepend=" and ">ID = #id:DECIMAL#</isNotEmpty>
+	    </dynamic>
+	  </delete>
+	  <sql id="queryCondition">
+	    <dynamic prepend="where">
+	      <isNotEmpty property="order">order by #order:VARCHAR#
+	        <isEqual property="sort" compareValue="ascending">asc</isEqual>
+	        <isEqual property="sort" compareValue="descending">desc</isEqual>
+	      </isNotEmpty>
+	    </dynamic>
+	  </sql>
+	  <select id="countByCondition" resultClass="java.lang.Long">select count(1) from CLMS_ACCESS_LIST
+	    <include refid="queryCondition"/>
+	  </select>
+	  <select id="selectByCondition" resultMap="resultMap">SELECT row_2.* FROM (SELECT row_1.*,rownum rn FROM ( SELECT t.*,rownumber() over() as rownum From CLMS_ACCESS_LIST t  
+	    <include refid="queryCondition"/>
+	 ) row_1 where ROWNUM <![CDATA[ < ]]>= #pageLastElementIndex:DECIMAL# ) row_2 where row_2.RN >= #pageFirstElementIndex:DECIMAL#
+	  </select>
+	  <select id="getByKey" parameterClass="com.me.model.dal.AccessListDO" resultMap="resultMap"> select  
+	    <include refid="Base_Column_List"/>  from  CLMS_ACCESS_LIST where ID = #id:DECIMAL#
+	  </select>
+	  <select id="getByIpSeqno" parameterClass="com.me.model.dal.AccessListDO" resultMap="resultMap"> select  
+	    <include refid="Base_Column_List"/>  from  CLMS_ACCESS_LIST where BIZ_SEQNO = #bizSeqno:VARCHAR#
+	  </select>
+	  <select id="getInsertDatas" parameterClass="java.util.Map" resultMap="resultMap"> select  
+	    <include refid="Base_Column_List"/>  from  CLMS_ACCESS_LIST where BIZ_SEQNO = #bizSeqno:VARCHAR# and ACCESS_RULE_TYPE=#accessRuleType:VARCHAR# and ACCESS_TYPE=#accessType:VARCHAR# and ACCESS_KEY=#accessKey:VARCHAR# and ACCESS_RESULT=#accessResult:VARCHAR#
+	  </select>
+	  <select id="getByIpSeqnoAndId" parameterClass ="java.util.Map" resultMap="resultMap"> select  
+	    <include refid="Base_Column_List"/>  from  CLMS_ACCESS_LIST where BIZ_SEQNO = #bizSeqno:VARCHAR# and ACCESS_TYPE in 
+	    <iterate property="accessType" conjunction="," close=")" open="(" > 
+				#accessType[]:VARCHAR# 
+		</iterate>
+	  </select>
+</sqlMap>

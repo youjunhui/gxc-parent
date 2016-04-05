@@ -1,0 +1,24 @@
+package com.me.dal.biz;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import com.me.dal.SqlMapDaoHelper;
+import com.me.model.dal.AccessListDO;
+
+@Repository
+public class AccessListDaoImpl extends SqlMapDaoHelper<AccessListDO> implements AccessListDao {
+	
+	@Autowired
+	private AccessListDao accessListDao;
+	
+	public AccessListDaoImpl() {
+		super(AccessListDO.class);
+	}
+	
+	private void deleteById(long id) {
+		deleteById(id);
+	}
+
+	
+}

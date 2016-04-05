@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+					xmlns:context="http://www.springframework.org/schema/context"
+					xmlns:mvc="http://www.springframework.org/schema/mvc"
+					xsi:schemaLocation="
+					http://www.springframework.org/schema/beans
+					http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+					http://www.springframework.org/schema/context
+					http://www.springframework.org/schema/context/spring-context-3.0.xsd
+					http://www.springframework.org/schema/mvc
+					http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
+
+	<!--扫描所有的controller -->
+	<context:component-scan base-package="com">
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Service" />
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Repository" />
+	</context:component-scan>
+	
+	<context:component-scan base-package="com.me.TestService" />
+
+	<!--自动注册DefaultAnnotationHandlerMapping与AnnotationMethodHandlerAdapter两个bean -->
+	<mvc:annotation-driven />
+	<!-- 对静态资源文件的访问 -->
+	<mvc:default-servlet-handler />
+	
+	<!--在不需要Controller处理request的情况，转向到设置的View 如：http://localhost:8080/cypeng/index 返回/WEB-INF/jsp/index.jsp -->
+	<!-- <mvc:view-controller path="/index" view-name="main/main" /> -->
+	<mvc:view-controller path="/" view-name="redirect:/index" />
+	<mvc:view-controller path="/error" view-name="/error/errorPage" />
+	<!-- 拦截器 -->
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/workplace/**" />
+			<bean class="com.me.interceptor.SecurityInterceptor">
+				<!-- 不需要权限验证的地址 -->
+				<property name="excludeUrls">
+					<list>
+						<value>/index</value>
+						<value>/error</value>
+						<value>/logout</value>
+						<value>/logoutCas</value>
+						<value>/base/</value>
+						<value>/resources/</value>
+						<value>/static/</value>
+						<value>/upload</value>
+					</list>
+				</property>
+			</bean>
+		</mvc:interceptor>
+	</mvc:interceptors>
+	<!--jsp页面解析器 -->
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/jsp/"></property>
+		<property name="suffix" value=".jsp"></property>
+	</bean>
+
+	<!-- i18n -->
+	<mvc:interceptors>
+		<bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor" />
+	</mvc:interceptors>
+	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
+		<property name="cookieName" value="clientLanguage" />
+		<property name="cookieMaxAge" value="86400" />
+		<property name="cookiePath" value="/" />
+		<property name="defaultLocale" value="zh_CN" />
+	</bean>
+	<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="basenames">
+			<list>
+				<value>base/i18n/Messages</value>
+			</list>
+		</property>
+		<property name="defaultEncoding" value="UTF-8" />
+		<property name="useCodeAsDefaultMessage" value="true" />
+	</bean>
+
+	<!-- 上传拦截，如最大上传值及最小上传值 -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<!-- one of the properties available; the maximum file size in bytes -->
+		<property name="maxUploadSize" value="9999999999" />
+		<!--resolveLazily属性启用是为了推迟文件解析，以便在控件层中捕获文件大小异常 -->
+		<property name="resolveLazily" value="true" />
+	</bean>
+
+	<!-- Spring MVC JSON配置 -->
+	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<bean class="org.springframework.http.converter.ByteArrayHttpMessageConverter" />
+				<bean id="jsonHttpMessageConverter" class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter">
+					<property name="supportedMediaTypes">
+						<list>
+							<value>text/html;charset=UTF-8</value>
+						</list>
+					</property>
+				</bean>
+				 <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+	                <property name="supportedMediaTypes">
+	            		 <bean class="org.springframework.http.MediaType">  
+                            <constructor-arg index="0" value="text" />  
+                            <constructor-arg index="1" value="plain" />  
+                            <constructor-arg index="2" value="UTF-8" />  
+                        </bean>  
+	                </property>
+	            </bean>
+			</list>
+		</property>
+	</bean>
+
+	<!-- org.springframework.web.servlet.handler.SimpleMappingExceptionResolver -->
+	<!-- cn.biznest.sys.exception.CustomSimpleMappingExceptionResolver -->
+	<!-- <bean id="exceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver"> <property name="exceptionMappings"> <props> <prop key="java.lang.Exception"> error </prop> </props> </property> </bean> -->
+	<bean id="exceptionResolver" class="com.me.handler.CustomSimpleMappingExceptionResolver">
+		<property name="defaultErrorView">
+			<value>error/500</value>
+		</property>
+		<property name="defaultStatusCode">
+			<value>500</value>
+		</property>
+		<property name="warnLogCategory">
+			<value>org.springframework.web.servlet.handler.SimpleMappingExceptionResolver</value>
+		</property>
+		<property name="exceptionMappings">
+			<props>
+				<prop key="java.lang.Exception">error/500</prop>
+				<prop key="com.me.model.exception.BizException">error/error</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!-- shior AOP式方法级权限检查 -->
+	<!-- <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" depends-on="lifecycleBeanPostProcessor">
+		<property name="proxyTargetClass" value="true" />
+	</bean> -->
+
+</beans>

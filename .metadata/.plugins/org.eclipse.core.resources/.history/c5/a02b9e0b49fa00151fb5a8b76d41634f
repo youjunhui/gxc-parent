@@ -1,0 +1,9 @@
+package com.me;
+
+import org.springframework.stereotype.Service;
+
+public interface TestService {
+	
+	public <T> T getById();
+
+}

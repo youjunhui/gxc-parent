@@ -1,0 +1,5 @@
+//com.springsource.config.ui.prefs.activePageIndex\:/gxc-web/src/main/resources/META-INF/spring/applicationContext.xml=<?xml version\="1.0" encoding\="UTF-8"?>\r\n<activePage index\="0"/>
+//com.springsource.config.ui.prefs.activePageIndex\:/gxc-web/src/main/resources/META-INF/spring/data-source.xml=<?xml version\="1.0" encoding\="UTF-8"?>\r\n<activePage index\="0"/>
+//com.springsource.config.ui.prefs.activePageIndex\:/gxc-web/src/main/resources/META-INF/spring/springMVC-servlet.xml=<?xml version\="1.0" encoding\="UTF-8"?>\r\n<activePage index\="0"/>
+//com.springsource.config.ui.prefs.activePageIndex\:/gxc-web/target/gxc-web/WEB-INF/classes/META-INF/spring/data-source.xml=<?xml version\="1.0" encoding\="UTF-8"?>\r\n<activePage index\="0"/>
+eclipse.preferences.version=1

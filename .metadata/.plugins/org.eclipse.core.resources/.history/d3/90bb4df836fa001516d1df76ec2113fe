@@ -1,0 +1,16 @@
+package com.me.dal.biz;
+
+import org.springframework.stereotype.Component;
+
+import com.me.dal.SqlMapDaoHelper;
+import com.me.model.dal.AccessListDO;
+
+@Component("AccessListDao")
+public class AccessListDaoImpl extends SqlMapDaoHelper<AccessListDO> implements AccessListDao {
+	
+	public AccessListDaoImpl() {
+		super(AccessListDO.class);
+	}
+
+	
+}
