@@ -11,11 +11,5 @@ public class AccessListDaoImpl extends SqlMapDaoHelper<AccessListDO> implements 
 	public AccessListDaoImpl() {
 		super(AccessListDO.class);
 	}
-
-	@Override
-	public void deleteById(long id) {
-		deleteById(id);
-	}
-
 	
 }

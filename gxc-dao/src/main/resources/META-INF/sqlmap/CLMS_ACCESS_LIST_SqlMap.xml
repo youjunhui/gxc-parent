@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
-<sqlMap namespace="djb" >
+<sqlMap namespace="AccessListDO" >
 	<resultMap id="resultMap" class="com.me.model.dal.AccessListDO">
 	    <result column="ID" property="id" jdbcType="DECIMAL"/>
 	    <result column="ACCESS_KEY" property="accessKey" jdbcType="VARCHAR"/>

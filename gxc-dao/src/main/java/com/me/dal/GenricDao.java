@@ -1,5 +1,7 @@
 package com.me.dal;
 
+import java.math.BigDecimal;
+
 import com.me.model.dal.Entity;
 
 /**
@@ -22,7 +24,7 @@ public interface GenricDao<T extends Entity> {
      * 
      * @param id 
      */
-    void deleteById(Long id);
+    void deleteByKey(T entity);
 
     /**
      * 修改记录
@@ -37,5 +39,5 @@ public interface GenricDao<T extends Entity> {
      * @param id
      * @return 
      */
-    T getById(Long id);
+    T getByKey(T entity);
 }

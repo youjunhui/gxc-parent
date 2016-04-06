@@ -1,10 +1,13 @@
 package com.me.handler;
 
+import java.math.BigDecimal;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.me.dal.biz.AccessListDao;
+import com.me.model.dal.AccessListDO;
 
 @Controller
 @RequestMapping("djb/testController")
@@ -19,7 +22,10 @@ public class TestController<T> {
 	@RequestMapping("/getbyid")
 	public T getById() {
 //		return testService.getById();
-		
-		return (T) accessListDao.getById(1l);
+			AccessListDO accessListDO = new AccessListDO();
+			accessListDO.setId(BigDecimal.valueOf(1724L));
+			accessListDO = accessListDao.getByKey(accessListDO);
+			System.out.println(accessListDO.getBizSeqno());
+		return null;
 	}
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>   
-<beans xmlns="http://www.springframework.org/schema/beans"      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"       
+<beans default-autowire="byName"  xmlns="http://www.springframework.org/schema/beans"      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"       
 xmlns:context="http://www.springframework.org/schema/context"      xmlns:aop="http://www.springframework.org/schema/aop"      
 xmlns:tx="http://www.springframework.org/schema/tx"       
 xsi:schemaLocation="http://www.springframework.org/schema/beans  http://www.springframework.org/schema/beans/spring-beans-2.5.xsd  
@@ -74,10 +74,6 @@ http://www.springframework.org/schema/tx   http://www.springframework.org/schema
         <property name="transactionManager" ref="transactionManager" />
     </bean>
     
-    <bean id="sqlMapDaoHelper" class="com.me.dal.SqlMapDaoHelper">
-    	<property name="dataSource" ref="dataSource"/>
-    	<property name="sqlMapClient" ref="sqlMapClient"/>
-	</bean>
 	
 	<!-- <bean id="testServiceImpl" class="com.me.TestServiceImpl">
     	<property name="dataSource" ref="dataSource"/>

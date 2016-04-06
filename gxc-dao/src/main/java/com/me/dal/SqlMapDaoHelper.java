@@ -1,12 +1,10 @@
 package com.me.dal;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
-import org.springframework.stereotype.Repository;
 
-import com.ibatis.sqlmap.client.SqlMapClient;
 import com.me.model.dal.Entity;
 
 /**
@@ -14,16 +12,9 @@ import com.me.model.dal.Entity;
  * 
  * @author chentingjia
  */
-
-@Repository
+@SuppressWarnings("deprecation")
 public class SqlMapDaoHelper<T extends Entity> extends SqlMapClientDaoSupport implements GenricDao<T> {
 	
-	@Autowired
-	private SqlMapClient sqlMapClient;
-	
-//	@Autowired
-//	private AccessListDO accessListDao;
-
     private String persistentClassShortName;
 
 	public SqlMapDaoHelper(Class<T> persistentClass) {
@@ -34,18 +25,18 @@ public class SqlMapDaoHelper<T extends Entity> extends SqlMapClientDaoSupport im
         this.persistentClassShortName = persistentClass;
     }
 
-    @Override
-    public void deleteById(Long id) {
-    	getSqlMapClientTemplate().delete(getQualifiedStatementName("deleteById"), id);
-    }
-
-    @SuppressWarnings("unchecked")
 	@Override
-    public T getById(Long id) {
-        return (T) getSqlMapClientTemplate().queryForObject(getQualifiedStatementName("getById"), id);
+    public void deleteByKey(T entity) {
+    	getSqlMapClientTemplate().delete(getQualifiedStatementName("deleteByKey"), entity);
     }
 
-    @Override
+    @SuppressWarnings({ "unchecked" })
+	@Override
+    public T getByKey(T entity) {
+        return (T) getSqlMapClientTemplate().queryForObject(getQualifiedStatementName("getByKey"), entity);
+    }
+
+	@Override
     public T insert(T entity) {
         Date currentDate = new Date();
         entity.setGmtCreated(currentDate);
@@ -58,12 +49,12 @@ public class SqlMapDaoHelper<T extends Entity> extends SqlMapClientDaoSupport im
         }
         Object pk = getSqlMapClientTemplate().insert(getQualifiedStatementName("insert"), entity);
         if(pk!=null){
-            entity.setId(Long.valueOf(pk.toString()));  	
+            entity.setId(BigDecimal.valueOf(Long.valueOf(pk.toString())));  	
         }
         return entity;
     }
 
-    @Override
+	@Override
     public void update(T entity) {
         entity.setGmtModified(new Date());
         getSqlMapClientTemplate().update(getQualifiedStatementName("update"), entity);

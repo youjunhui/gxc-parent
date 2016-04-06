@@ -11,15 +11,10 @@ import java.util.Date;
 public abstract class Entity implements Serializable {
     private static final long serialVersionUID = 6042639456624076392L;
 
-    protected BigDecimal div2(BigDecimal num) {
-        // return DecimalUtil.formatDecimal(num , DecimalUtil.FMTSTRING);
-        return num == null ? BigDecimal.ZERO : num.setScale(2 , BigDecimal.ROUND_HALF_UP);
-    }
-
     /**
      * 主键
      */
-    private Long id;
+    private BigDecimal id;
 
     /**
      * 创建人
@@ -73,11 +68,11 @@ public abstract class Entity implements Serializable {
         this.gmtModifier = gmtModifier;
     }
 
-    public Long getId() {
+    public BigDecimal getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(BigDecimal id) {
         this.id = id;
     }
 }
